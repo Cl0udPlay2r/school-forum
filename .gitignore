@@ -1,0 +1,30 @@
+.idea/
+log/
+database.sql
+
+.env
+!.env.example
+
+output/
+.pi-web/
+tmp/
+
+# 压测原始结果体积大（约 434 MB），不入库；保留 JMX、脚本、CSV、SQL 与 SUMMARY.md
+jmeter/result/*.jtl
+jmeter/result/*.log
+jmeter/校园论坛-点赞收藏压测.jmx
+jmeter/点赞并发测试.jmx
+jmeter/点赞长尾压测-1000帖.jmx
+
+# 仅保留 v2 复现链路所需的数据/脚本；旧场景与临时导出不入库
+jmeter/data/like_only.csv
+jmeter/testData/
+jmeter/sql/loadtest_topics_2000.sql
+
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 截图原图包含个人邮箱/联系方式，不入库；只提交打码后的 docs/screenshots/*.png
+docs/screenshots/.raw/

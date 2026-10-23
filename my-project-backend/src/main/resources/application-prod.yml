@@ -1,0 +1,69 @@
+#生产环境配置
+server:
+  port: 80
+springdoc:
+  api-docs:
+    enabled: false
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+spring:
+  mail:
+    host: smtp.163.com
+    username: ${SEND_MAIL}
+    password: ${MAIL_KEY}
+  rabbitmq:
+    addresses: localhost
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: /
+    listener:
+      simple:
+        #兜底：消费失败且重试也没救回来时，直接 reject 且不重回队列，交给死信队列（dlx.direct）处理。
+        #不配这个的话，一旦 retry 被关掉，listener 里的 throw 会导致消息无限 requeue 空转。
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000ms
+  datasource:
+    url: jdbc:mysql://localhost:3306/school_froum
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    jwt:
+      key: ${JWT_KEY}
+      expire: 72
+      limit:
+        base: 10
+        upgrade: 300
+        frequency: 30
+    filter:
+      order: -100
+  web:
+    verify:
+      mail-limit: 60
+    flow:
+      period: 3
+      limit: 10
+      block: 30
+    cors:
+      origin: '*'
+      credentials: false
+      methods: '*'
+  minio:
+    endpoint: 'http://localhost:9000'
+    username: ${MINIO_USERNAME:minioadmin}
+    password: ${MINIO_PASSWORD}
+  weather:
+    api-key: ${WEATHER_API_KEY}
+    host: ${WEATHER_HOST}
+    project: ${WEATHER_PROJECT}
+    jwt-key: ${WEATHER_JWT_KEY}
+    privateKey: ${WEATHER_PRIVATE_KEY}
+  data:
+    redis:
+      host: localhost
+      port: 6449
+      database: 0

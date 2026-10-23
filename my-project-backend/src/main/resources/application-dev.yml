@@ -1,0 +1,86 @@
+# 开发环境配置
+springdoc:
+  paths-to-match: /api/**
+  swagger-ui:
+    operations-sorter: alpha
+spring:
+  mail:
+    host: smtp.163.com
+    username: ${SEND_MAIL}
+    password: ${MAIL_KEY}
+  rabbitmq:
+    addresses: localhost
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: /
+    listener:
+      simple:
+        #兜底：消费失败且重试也没救回来时，直接 reject 且不重回队列，交给死信队列（dlx.direct）处理。
+        #不配这个的话，一旦 retry 被关掉，listener 里的 throw 会导致消息无限 requeue 空转。
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000ms
+  datasource:
+    url: jdbc:mysql://localhost:3306/school_froum
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    jwt:
+      key: ${JWT_KEY}
+      expire: 72
+      limit:
+        base: 10
+        upgrade: 300
+        frequency: 30
+    filter:
+      order: -100
+  web:
+    verify:
+      mail-limit: 60
+    flow:
+      period: 3
+      limit: 10000000
+      block: 30
+    cors:
+      origin: '*'
+      credentials: false
+      methods: '*'
+  minio:
+    endpoint: 'http://localhost:9000'
+    username: ${MINIO_USERNAME:minioadmin}
+    password: ${MINIO_PASSWORD}
+  weather:
+    api-key: ${WEATHER_API_KEY}
+    host: ${WEATHER_HOST}
+    project: ${WEATHER_PROJECT}
+    jwt-key: ${WEATHER_JWT_KEY}
+    privateKey: ${WEATHER_PRIVATE_KEY}
+  ai:
+    deepseek:
+      api-key: ${MAXKB_API_KEY}
+      base-url: http://localhost:8099/chat/api/019ff10d-bcdb-7921-8108-412ae5ab53f7
+  # Redis 连接池
+  # 默认情况下 Lettuce 所有请求共用一条原生连接，高并发时阻塞式取值会全部排在
+  # 这一条连接上（压测实测 44% 的工作线程卡在 io.lettuce.core.protocol.AsyncCommand.await，
+  # 且线程数 50->100 时 TPS 反而下降）。开启连接池后连接不再共享，
+  # 请求可以从池中取不同连接并行往返。
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        shutdown-timeout: 200ms
+        pool:
+          enabled: true
+          max-active: 64
+          max-idle: 32
+          min-idle: 8
+          max-wait: 2000ms
+logging:
+  level:
+    com.example.filter.RequestLogFilter: WARN
